@@ -1,0 +1,852 @@
+TALLER 1 - CASOS DE USO COMPLETOS
+SISTEMA DE PAGOS DE SERVICIOS PÚBLICOS
+
+Entidades:
+- Cuenta
+- Cuenta de Ahorros
+- Cuenta Corriente
+- Factura
+- Cliente
+- Pago
+
+Funcionalidades principales:
+- CRUD de las entidades
+- procesarPago
+- obtenerSaldoCuenta
+- obtenerPagosPorCliente
+- obtenerFacturasPorCliente
+
+
+============================================================
+1. CASO DE USO: PROCESAR PAGO
+============================================================
+
+Como cliente autenticado, quiero realizar el pago de una factura de servicios públicos desde mi cuenta, para cancelar el valor pendiente de la factura.
+
+ACTORES PRIMARIOS:
+- Cliente
+
+ACTORES SECUNDARIOS:
+- Sistema de Pagos
+- Cuenta de Ahorros
+- Cuenta Corriente
+- Empresa de servicios públicos
+
+PRECONDICIONES:
+- El cliente debe estar registrado y autenticado.
+- El cliente debe tener una cuenta activa.
+- La factura debe existir.
+- La factura debe estar pendiente de pago.
+- La cuenta debe tener saldo suficiente para realizar el pago.
+
+POSTCONDICIONES:
+- El pago queda registrado.
+- El saldo de la cuenta disminuye por el valor pagado.
+- La factura queda marcada como pagada.
+- El sistema genera un comprobante del pago.
+
+FLUJO PRINCIPAL:
+Given El cliente está autenticado y tiene una cuenta activa.
+When El cliente selecciona la opción "Pagar factura".
+Then El sistema solicita el número de factura.
+Then El cliente ingresa el número de factura.
+Then El sistema consulta la factura.
+Then El sistema muestra los datos de la factura y el valor a pagar.
+Then El cliente selecciona la cuenta desde la cual realizará el pago.
+Then El sistema valida que la cuenta esté activa y tenga saldo suficiente.
+Then El sistema muestra un resumen de la operación.
+Then El cliente confirma el pago.
+Then El sistema procesa el pago.
+Then El sistema descuenta el valor de la cuenta.
+Then El sistema actualiza la factura como pagada.
+Then El sistema registra el pago.
+Then El sistema muestra el comprobante de pago.
+
+FLUJO ALTERNATIVO 1 - PAGO DESDE OTRA CUENTA:
+Given El cliente tiene más de una cuenta activa.
+When El cliente selecciona una cuenta para realizar el pago.
+Then El sistema valida la cuenta seleccionada.
+Then El cliente puede cambiar a otra cuenta disponible.
+Then El sistema actualiza el resumen con la nueva cuenta.
+Then El flujo continúa con la confirmación del pago.
+
+FLUJO ALTERNATIVO 2 - CLIENTE CANCELA:
+Given El sistema muestra el resumen del pago.
+When El cliente decide cancelar la operación.
+Then El sistema cancela la operación.
+Then El sistema no modifica el saldo de la cuenta.
+Then El sistema no modifica el estado de la factura.
+Then El sistema regresa al menú principal.
+
+EXCEPCIÓN 1 - FACTURA NO ENCONTRADA:
+Given El cliente ingresa un número de factura inexistente.
+When El sistema realiza la consulta.
+Then El sistema informa "Factura no encontrada".
+Then El sistema permite corregir el número de factura o cancelar la operación.
+
+EXCEPCIÓN 2 - SALDO INSUFICIENTE:
+Given La cuenta seleccionada no tiene saldo suficiente.
+When El sistema valida el saldo.
+Then El sistema informa "Saldo insuficiente para realizar el pago".
+Then El sistema no procesa el pago.
+Then El cliente puede seleccionar otra cuenta o cancelar.
+
+
+============================================================
+2. CASO DE USO: OBTENER SALDO DE CUENTA
+============================================================
+
+Como cliente autenticado, quiero consultar el saldo de mi cuenta, para conocer cuánto dinero tengo disponible.
+
+ACTORES PRIMARIOS:
+- Cliente
+
+ACTORES SECUNDARIOS:
+- Sistema de Pagos
+- Cuenta de Ahorros
+- Cuenta Corriente
+
+PRECONDICIONES:
+- El cliente debe estar registrado y autenticado.
+- El cliente debe tener al menos una cuenta activa.
+
+POSTCONDICIONES:
+- El sistema muestra el saldo actualizado de la cuenta.
+- No se modifica información de la cuenta.
+
+FLUJO PRINCIPAL:
+Given El cliente está autenticado.
+When El cliente selecciona la opción "Consultar saldo".
+Then El sistema muestra las cuentas asociadas al cliente.
+Then El cliente selecciona una cuenta.
+Then El sistema consulta la información de la cuenta.
+Then El sistema valida que la cuenta esté activa.
+Then El sistema obtiene el saldo disponible.
+Then El sistema muestra el saldo de la cuenta al cliente.
+
+FLUJO ALTERNATIVO 1 - CONSULTAR OTRA CUENTA:
+Given El cliente tiene varias cuentas.
+When El cliente selecciona una cuenta diferente.
+Then El sistema consulta el saldo de la nueva cuenta.
+Then El sistema muestra el saldo correspondiente.
+
+FLUJO ALTERNATIVO 2 - REGRESAR AL MENÚ:
+Given El sistema muestra el saldo.
+When El cliente selecciona "Regresar".
+Then El sistema no modifica la información.
+Then El sistema retorna al menú principal.
+
+EXCEPCIÓN 1 - CUENTA INACTIVA:
+Given El cliente selecciona una cuenta inactiva.
+When El sistema valida el estado de la cuenta.
+Then El sistema informa "La cuenta se encuentra inactiva".
+Then El sistema no muestra el saldo disponible para operaciones.
+
+EXCEPCIÓN 2 - ERROR DE CONSULTA:
+Given El cliente solicita el saldo.
+When El sistema no puede consultar la información de la cuenta.
+Then El sistema informa "No fue posible consultar el saldo".
+Then El sistema permite intentar nuevamente.
+
+
+============================================================
+3. CASO DE USO: OBTENER PAGOS POR CLIENTE
+============================================================
+
+Como cliente autenticado, quiero consultar mis pagos realizados, para conocer el historial de pagos de servicios públicos.
+
+ACTORES PRIMARIOS:
+- Cliente
+
+ACTORES SECUNDARIOS:
+- Sistema de Pagos
+- Base de datos
+
+PRECONDICIONES:
+- El cliente debe estar registrado y autenticado.
+- El cliente debe existir en el sistema.
+
+POSTCONDICIONES:
+- El sistema muestra los pagos asociados al cliente.
+- No se modifica información de pagos.
+
+FLUJO PRINCIPAL:
+Given El cliente está autenticado.
+When El cliente selecciona la opción "Historial de pagos".
+Then El sistema identifica al cliente autenticado.
+Then El sistema consulta los pagos asociados al cliente.
+Then El sistema organiza los pagos por fecha.
+Then El sistema muestra el listado de pagos.
+Then El cliente puede consultar el detalle de un pago.
+
+FLUJO ALTERNATIVO 1 - FILTRAR POR FECHA:
+Given El sistema muestra el historial de pagos.
+When El cliente selecciona un rango de fechas.
+Then El sistema filtra los pagos correspondientes al rango seleccionado.
+Then El sistema muestra los resultados filtrados.
+
+FLUJO ALTERNATIVO 2 - CONSULTAR DETALLE:
+Given El sistema muestra el listado de pagos.
+When El cliente selecciona un pago.
+Then El sistema muestra número de pago, factura, fecha, valor y cuenta utilizada.
+Then El cliente puede regresar al historial.
+
+EXCEPCIÓN 1 - CLIENTE SIN PAGOS:
+Given El cliente no tiene pagos registrados.
+When El sistema consulta el historial.
+Then El sistema informa "No existen pagos registrados para el cliente".
+Then El sistema permite regresar al menú principal.
+
+EXCEPCIÓN 2 - ERROR EN LA CONSULTA:
+Given El cliente solicita su historial.
+When El sistema presenta un error al consultar la base de datos.
+Then El sistema informa "No fue posible obtener el historial de pagos".
+Then El sistema permite realizar la consulta nuevamente.
+
+
+============================================================
+4. CASO DE USO: OBTENER FACTURAS POR CLIENTE
+============================================================
+
+Como cliente autenticado, quiero consultar mis facturas de servicios públicos, para conocer cuáles están pendientes y cuáles ya fueron pagadas.
+
+ACTORES PRIMARIOS:
+- Cliente
+
+ACTORES SECUNDARIOS:
+- Sistema de Pagos
+- Empresa de servicios públicos
+- Base de datos
+
+PRECONDICIONES:
+- El cliente debe estar registrado y autenticado.
+- El cliente debe tener facturas asociadas.
+
+POSTCONDICIONES:
+- El sistema muestra las facturas asociadas al cliente.
+- No se modifica ninguna factura.
+
+FLUJO PRINCIPAL:
+Given El cliente está autenticado.
+When El cliente selecciona la opción "Consultar facturas".
+Then El sistema identifica al cliente.
+Then El sistema consulta las facturas asociadas.
+Then El sistema muestra el listado de facturas.
+Then El sistema indica el estado de cada factura.
+Then El cliente puede seleccionar una factura.
+Then El sistema muestra el detalle de la factura seleccionada.
+
+FLUJO ALTERNATIVO 1 - FILTRAR FACTURAS PENDIENTES:
+Given El cliente tiene facturas pagadas y pendientes.
+When El cliente selecciona el filtro "Pendientes".
+Then El sistema muestra únicamente las facturas pendientes.
+
+FLUJO ALTERNATIVO 2 - CONSULTAR DETALLE:
+Given El sistema muestra el listado de facturas.
+When El cliente selecciona una factura.
+Then El sistema muestra número de factura, servicio, fecha de emisión, fecha de vencimiento, valor y estado.
+Then El cliente puede regresar al listado.
+
+EXCEPCIÓN 1 - SIN FACTURAS:
+Given El cliente no tiene facturas asociadas.
+When El sistema realiza la consulta.
+Then El sistema informa "No existen facturas asociadas al cliente".
+Then El sistema permite regresar al menú principal.
+
+EXCEPCIÓN 2 - ERROR DE CONSULTA:
+Given El cliente solicita sus facturas.
+When El sistema no puede consultar la información.
+Then El sistema informa "No fue posible obtener las facturas".
+Then El sistema permite intentar nuevamente.
+
+
+============================================================
+5. CRUD - ENTIDAD CLIENTE
+============================================================
+
+5.1 CREAR CLIENTE
+
+Como administrador, quiero registrar un cliente, para permitirle utilizar el sistema de pagos.
+
+ACTORES PRIMARIOS:
+- Administrador
+
+ACTORES SECUNDARIOS:
+- Sistema de Pagos
+- Base de datos
+
+PRECONDICIONES:
+- El administrador debe estar autenticado.
+- El cliente no debe existir previamente.
+
+POSTCONDICIONES:
+- El cliente queda registrado en el sistema.
+
+FLUJO PRINCIPAL:
+Given El administrador está autenticado.
+When Selecciona "Crear cliente".
+Then El sistema solicita los datos del cliente.
+Then El administrador ingresa los datos.
+Then El sistema valida los datos.
+Then El sistema registra el cliente.
+Then El sistema muestra "Cliente creado correctamente".
+
+FLUJOS ALTERNATIVOS:
+- El administrador puede cancelar antes de guardar.
+- El administrador puede corregir datos que no cumplan las validaciones.
+
+EXCEPCIONES:
+- El documento del cliente ya existe.
+- Faltan datos obligatorios.
+
+5.2 CONSULTAR CLIENTE
+
+Como administrador, quiero consultar un cliente, para visualizar su información.
+
+FLUJO PRINCIPAL:
+Given El administrador está autenticado.
+When Busca un cliente por documento.
+Then El sistema consulta el cliente.
+Then El sistema muestra su información.
+
+FLUJOS ALTERNATIVOS:
+- Buscar por otro criterio permitido.
+- Regresar al listado de clientes.
+
+EXCEPCIONES:
+- Cliente no encontrado.
+- Error de consulta en la base de datos.
+
+5.3 ACTUALIZAR CLIENTE
+
+Como administrador, quiero actualizar los datos de un cliente, para mantener su información vigente.
+
+FLUJO PRINCIPAL:
+Given El cliente existe.
+When El administrador selecciona "Actualizar".
+Then El sistema muestra los datos actuales.
+Then El administrador modifica la información.
+Then El sistema valida los cambios.
+Then El sistema guarda la información actualizada.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar los cambios.
+- Modificar únicamente un dato.
+
+EXCEPCIONES:
+- Datos ingresados con formato inválido.
+- Cliente no encontrado.
+
+5.4 ELIMINAR CLIENTE
+
+Como administrador, quiero eliminar un cliente, para retirar registros que ya no deban estar activos.
+
+FLUJO PRINCIPAL:
+Given El cliente existe.
+When El administrador selecciona "Eliminar".
+Then El sistema solicita confirmación.
+Then El administrador confirma.
+Then El sistema elimina o inactiva el cliente.
+Then El sistema informa que la operación fue realizada.
+
+FLUJOS ALTERNATIVOS:
+- El administrador cancela la eliminación.
+- El sistema permite inactivar en lugar de eliminar físicamente.
+
+EXCEPCIONES:
+- Cliente no encontrado.
+- El cliente tiene información relacionada que impide la eliminación.
+
+
+============================================================
+6. CRUD - ENTIDAD CUENTA
+============================================================
+
+6.1 CREAR CUENTA
+
+Como administrador, quiero crear una cuenta, para asociarla a un cliente.
+
+ACTORES PRIMARIOS:
+- Administrador
+
+PRECONDICIONES:
+- El cliente debe existir.
+- El administrador debe estar autenticado.
+
+POSTCONDICIONES:
+- La cuenta queda registrada y asociada al cliente.
+
+FLUJO PRINCIPAL:
+Given El administrador está autenticado y el cliente existe.
+When Selecciona "Crear cuenta".
+Then El sistema solicita tipo, número y datos de la cuenta.
+Then El administrador ingresa los datos.
+Then El sistema valida la información.
+Then El sistema crea la cuenta.
+Then El sistema muestra confirmación.
+
+FLUJOS ALTERNATIVOS:
+- Crear cuenta de ahorros.
+- Crear cuenta corriente.
+
+EXCEPCIONES:
+- Número de cuenta ya existente.
+- Cliente no encontrado.
+
+6.2 CONSULTAR CUENTA
+
+Como administrador, quiero consultar una cuenta, para conocer su información y estado.
+
+FLUJO PRINCIPAL:
+Given La cuenta existe.
+When El administrador busca el número de cuenta.
+Then El sistema consulta la cuenta.
+Then El sistema muestra sus datos.
+
+FLUJOS ALTERNATIVOS:
+- Consultar por cliente.
+- Consultar otra cuenta.
+
+EXCEPCIONES:
+- Cuenta no encontrada.
+- Error de consulta.
+
+6.3 ACTUALIZAR CUENTA
+
+Como administrador, quiero actualizar una cuenta, para mantener sus datos correctos.
+
+FLUJO PRINCIPAL:
+Given La cuenta existe.
+When El administrador selecciona actualizar.
+Then El sistema muestra la información.
+Then El administrador modifica los datos permitidos.
+Then El sistema valida y guarda los cambios.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar actualización.
+- Modificar únicamente el estado de la cuenta.
+
+EXCEPCIONES:
+- Cuenta no encontrada.
+- Datos inválidos.
+
+6.4 ELIMINAR CUENTA
+
+Como administrador, quiero eliminar o inactivar una cuenta.
+
+FLUJO PRINCIPAL:
+Given La cuenta existe.
+When El administrador selecciona eliminar.
+Then El sistema solicita confirmación.
+Then El administrador confirma.
+Then El sistema elimina o inactiva la cuenta.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar operación.
+- Inactivar la cuenta en lugar de eliminarla.
+
+EXCEPCIONES:
+- Cuenta no encontrada.
+- La cuenta tiene operaciones pendientes.
+
+
+============================================================
+7. CRUD - CUENTA DE AHORROS
+============================================================
+
+CREAR:
+Como administrador, quiero crear una cuenta de ahorros para asociarla a un cliente.
+Given El cliente existe.
+When El administrador registra una cuenta de ahorros.
+Then El sistema valida el número y los datos.
+Then El sistema registra la cuenta.
+
+ALTERNATIVOS:
+- Cancelar el registro.
+- Corregir los datos antes de guardar.
+
+EXCEPCIONES:
+- Número de cuenta duplicado.
+- Cliente inexistente.
+
+CONSULTAR:
+Como administrador, quiero consultar una cuenta de ahorros.
+Given La cuenta existe.
+When El administrador ingresa el número.
+Then El sistema muestra la información.
+
+ALTERNATIVOS:
+- Buscar por cliente.
+- Consultar otra cuenta.
+
+EXCEPCIONES:
+- Cuenta no encontrada.
+- Error de consulta.
+
+ACTUALIZAR:
+Como administrador, quiero actualizar una cuenta de ahorros.
+Given La cuenta existe.
+When El administrador modifica datos permitidos.
+Then El sistema valida y guarda los cambios.
+
+ALTERNATIVOS:
+- Cancelar cambios.
+- Modificar solo el estado.
+
+EXCEPCIONES:
+- Datos inválidos.
+- Cuenta inexistente.
+
+ELIMINAR:
+Como administrador, quiero eliminar o inactivar una cuenta de ahorros.
+Given La cuenta existe.
+When El administrador confirma la eliminación.
+Then El sistema elimina o inactiva la cuenta.
+
+ALTERNATIVOS:
+- Cancelar operación.
+- Inactivar en lugar de eliminar.
+
+EXCEPCIONES:
+- Cuenta inexistente.
+- Cuenta con operaciones pendientes.
+
+
+============================================================
+8. CRUD - CUENTA CORRIENTE
+============================================================
+
+CREAR:
+Como administrador, quiero crear una cuenta corriente para asociarla a un cliente.
+Given El cliente existe.
+When El administrador registra la cuenta corriente.
+Then El sistema valida y crea la cuenta.
+
+ALTERNATIVOS:
+- Cancelar el registro.
+- Corregir los datos antes de guardar.
+
+EXCEPCIONES:
+- Número de cuenta duplicado.
+- Cliente inexistente.
+
+CONSULTAR:
+Como administrador, quiero consultar una cuenta corriente.
+Given La cuenta existe.
+When El administrador realiza la búsqueda.
+Then El sistema muestra los datos de la cuenta.
+
+ALTERNATIVOS:
+- Buscar por cliente.
+- Consultar otra cuenta.
+
+EXCEPCIONES:
+- Cuenta no encontrada.
+- Error de consulta.
+
+ACTUALIZAR:
+Como administrador, quiero actualizar una cuenta corriente.
+Given La cuenta existe.
+When El administrador modifica los datos permitidos.
+Then El sistema valida y actualiza la información.
+
+ALTERNATIVOS:
+- Cancelar cambios.
+- Modificar únicamente el estado.
+
+EXCEPCIONES:
+- Datos inválidos.
+- Cuenta no encontrada.
+
+ELIMINAR:
+Como administrador, quiero eliminar o inactivar una cuenta corriente.
+Given La cuenta existe.
+When El administrador confirma.
+Then El sistema elimina o inactiva la cuenta.
+
+ALTERNATIVOS:
+- Cancelar eliminación.
+- Inactivar en lugar de eliminar.
+
+EXCEPCIONES:
+- Cuenta inexistente.
+- La cuenta tiene operaciones pendientes.
+
+
+============================================================
+9. CRUD - FACTURA
+============================================================
+
+CREAR FACTURA
+
+Como administrador, quiero registrar una factura, para asociarla a un cliente.
+
+ACTORES PRIMARIOS:
+- Administrador
+
+ACTORES SECUNDARIOS:
+- Empresa de servicios públicos
+- Sistema de Pagos
+
+PRECONDICIONES:
+- El cliente debe existir.
+- La factura no debe estar registrada previamente.
+
+POSTCONDICIONES:
+- La factura queda registrada como pendiente.
+
+FLUJO PRINCIPAL:
+Given El cliente existe.
+When El administrador selecciona crear factura.
+Then El sistema solicita los datos de la factura.
+Then El administrador ingresa los datos.
+Then El sistema valida la información.
+Then El sistema registra la factura como pendiente.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar antes de guardar.
+- Corregir los datos antes de confirmar.
+
+EXCEPCIONES:
+- Número de factura duplicado.
+- Cliente inexistente.
+
+CONSULTAR FACTURA
+
+Como administrador, quiero consultar una factura.
+
+FLUJO PRINCIPAL:
+Given La factura existe.
+When El administrador busca el número de factura.
+Then El sistema muestra los datos y el estado.
+
+FLUJOS ALTERNATIVOS:
+- Buscar por cliente.
+- Filtrar por estado pendiente o pagada.
+
+EXCEPCIONES:
+- Factura no encontrada.
+- Error de consulta.
+
+ACTUALIZAR FACTURA
+
+Como administrador, quiero actualizar una factura.
+
+FLUJO PRINCIPAL:
+Given La factura existe y puede ser modificada.
+When El administrador cambia un dato permitido.
+Then El sistema valida y guarda la actualización.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar cambios.
+- Modificar únicamente datos administrativos permitidos.
+
+EXCEPCIONES:
+- Factura inexistente.
+- Factura ya pagada y no modificable.
+
+ELIMINAR FACTURA
+
+Como administrador, quiero eliminar o anular una factura.
+
+FLUJO PRINCIPAL:
+Given La factura existe y puede ser anulada.
+When El administrador confirma la operación.
+Then El sistema elimina o marca como anulada la factura.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar operación.
+- Anular en lugar de eliminar físicamente.
+
+EXCEPCIONES:
+- Factura inexistente.
+- Factura ya pagada.
+
+
+============================================================
+10. CRUD - PAGO
+============================================================
+
+CREAR PAGO
+
+Como sistema, quiero registrar un pago, para conservar el historial de las operaciones realizadas.
+
+ACTORES PRIMARIOS:
+- Sistema de Pagos
+
+ACTORES SECUNDARIOS:
+- Cliente
+- Cuenta
+- Factura
+
+PRECONDICIONES:
+- La factura debe existir.
+- La cuenta debe estar activa.
+- Debe existir saldo suficiente.
+- El cliente debe estar autenticado.
+
+POSTCONDICIONES:
+- El pago queda registrado.
+- El saldo disminuye.
+- La factura queda pagada.
+
+FLUJO PRINCIPAL:
+Given El cliente confirma un pago válido.
+When El sistema procesa la operación.
+Then El sistema registra el pago.
+Then El sistema actualiza el saldo.
+Then El sistema actualiza la factura.
+
+FLUJOS ALTERNATIVOS:
+- Pago desde cuenta de ahorros.
+- Pago desde cuenta corriente.
+
+EXCEPCIONES:
+- Saldo insuficiente.
+- Error al registrar la transacción.
+
+CONSULTAR PAGO
+
+Como cliente, quiero consultar un pago realizado.
+
+FLUJO PRINCIPAL:
+Given El pago existe y pertenece al cliente.
+When El cliente consulta el número de pago.
+Then El sistema muestra el detalle.
+
+FLUJOS ALTERNATIVOS:
+- Consultar por factura.
+- Consultar desde el historial.
+
+EXCEPCIONES:
+- Pago no encontrado.
+- El pago no pertenece al cliente.
+
+ACTUALIZAR PAGO
+
+Como administrador, quiero actualizar datos administrativos permitidos de un pago.
+
+FLUJO PRINCIPAL:
+Given El pago existe y el dato puede modificarse.
+When El administrador realiza el cambio.
+Then El sistema valida y guarda la actualización.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar actualización.
+- Modificar únicamente un campo permitido.
+
+EXCEPCIONES:
+- Pago inexistente.
+- Pago cerrado/no modificable.
+
+ELIMINAR PAGO
+
+Como administrador, quiero anular un pago, para corregir una operación inválida.
+
+FLUJO PRINCIPAL:
+Given El pago existe y puede ser anulado.
+When El administrador confirma la anulación.
+Then El sistema registra la anulación.
+Then El sistema actualiza los datos relacionados según las reglas del negocio.
+
+FLUJOS ALTERNATIVOS:
+- Cancelar la anulación.
+- Solicitar reversión en lugar de eliminación física.
+
+EXCEPCIONES:
+- Pago inexistente.
+- Pago que no puede ser revertido.
+
+
+============================================================
+HISTORIAS DE USUARIO
+============================================================
+
+HU-01 - Crear Cliente
+Como administrador, quiero registrar clientes para permitirles utilizar el sistema.
+
+HU-02 - Consultar Cliente
+Como administrador, quiero consultar clientes para visualizar su información.
+
+HU-03 - Actualizar Cliente
+Como administrador, quiero actualizar clientes para mantener sus datos vigentes.
+
+HU-04 - Eliminar Cliente
+Como administrador, quiero eliminar o inactivar clientes que ya no deban estar activos.
+
+HU-05 - Crear Cuenta
+Como administrador, quiero crear cuentas para asociarlas a clientes.
+
+HU-06 - Consultar Cuenta
+Como administrador, quiero consultar cuentas para conocer su información y estado.
+
+HU-07 - Actualizar Cuenta
+Como administrador, quiero actualizar cuentas para mantener sus datos correctos.
+
+HU-08 - Eliminar Cuenta
+Como administrador, quiero eliminar o inactivar cuentas que ya no estén disponibles.
+
+HU-09 - CRUD Cuenta de Ahorros
+Gestionar cuentas de ahorros mediante crear, consultar, actualizar y eliminar/inactivar.
+
+HU-10 - CRUD Cuenta Corriente
+Gestionar cuentas corrientes mediante crear, consultar, actualizar y eliminar/inactivar.
+
+HU-11 - CRUD Factura
+Gestionar facturas mediante crear, consultar, actualizar y eliminar/anular.
+
+HU-12 - CRUD Pago
+Gestionar registros de pago mediante crear, consultar, actualizar y eliminar/anular.
+
+HU-13 - Procesar Pago
+Como cliente autenticado, quiero pagar una factura desde mi cuenta para cancelar el servicio.
+
+HU-14 - Obtener Saldo Cuenta
+Como cliente autenticado, quiero consultar el saldo de mi cuenta para conocer mi dinero disponible.
+
+HU-15 - Obtener Pagos por Cliente
+Como cliente autenticado, quiero consultar mis pagos para revisar mi historial de operaciones.
+
+HU-16 - Obtener Facturas por Cliente
+Como cliente autenticado, quiero consultar mis facturas para conocer las facturas pendientes y pagadas.
+
+
+============================================================
+
+============================================================
+
+Título:
+Procesar pago de factura
+
+Descripción:
+Como cliente autenticado, quiero realizar el pago de una factura desde mi cuenta, para cancelar el valor pendiente.
+
+Criterios de aceptación:
+
+Scenario: Realizar pago correctamente
+Given El cliente está autenticado y tiene una cuenta activa
+When Quiere pagar una factura pendiente
+Then El cliente ingresa el número de factura y selecciona la cuenta
+Then El sistema valida los datos y el saldo
+Then El sistema muestra un resumen para confirmación
+Then El cliente confirma la operación
+Then El sistema procesa el pago
+Then El sistema muestra el comprobante
+
+Scenario: Factura no encontrada
+Given Número de factura inexistente
+When El cliente quiere realizar un pago
+Then El sistema informa "Factura no encontrada"
+Then El cliente puede corregir el dato o cancelar
+
+Scenario: Cliente cancela el pago
+Given El sistema muestra el resumen de la operación
+When El cliente cancela la confirmación
+Then El sistema descarta la operación
+Then El sistema no modifica el saldo ni la factura
+
+Scenario: Saldo insuficiente
+Given La cuenta seleccionada no tiene saldo suficiente
+When El cliente confirma el pago
+Then El sistema informa "Saldo insuficiente"
+Then El sistema no procesa la operación
